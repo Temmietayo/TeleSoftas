@@ -1,0 +1,341 @@
+{
+	"info": {
+		"_postman_id": "b091c866-983a-495d-9519-39ccd588b7a5",
+		"name": "TeleSoftas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3285353"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Get Quiz List\")",
+									"",
+									"pm.collectionVariables.set(\"accesstoken\", pm.response.json().accessToken);",
+									"",
+									"//status",
+									"pm.test(\"Test Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Test Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"//performance",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									"//Data type",
+									"pm.test(\"Test User Login Response Body\", function () {",
+									"    var jsonData = pm.response.json();  ",
+									"    pm.expect(jsonData.accessToken).to.not.be.empty ",
+									"    pm.expect(jsonData.refreshToken).to.not.be.empty ",
+									"    pm.expect(jsonData.user).to.be.an(\"object\").that.has.any.keys(\"id\")",
+									"",
+									"});",
+									"",
+									"//Functional",
+									"pm.test(\"Test Returns numeric user id\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.user.id).to.match(/^[0-9]+$/);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"teshytemmy@gmail.com\",\n    \"password\": \"Kaduna09.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Quiz Collection",
+			"item": [
+				{
+					"name": "Get Quiz List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Create Quiz Collection\")",
+									"",
+									"let jsonData = pm.response.json();",
+									"// Store the 1st, 10th abd 15th result of quiz list for use in creating a new collection",
+									"data = jsonData.data",
+									"if (data.length > 14) {",
+									"    quizids = [data[0].id, data[9].id, data[14].id]",
+									"    pm.collectionVariables.set(\"quizids\", JSON.stringify(quizids));",
+									"}",
+									"",
+									"//status",
+									"pm.test(\"Test Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Test Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"//performance",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									"//Data type",
+									"pm.test(\"Test Quiz List Response Body\", function () {",
+									"    var jsonData = pm.response.json(); ",
+									"    pm.expect(jsonData.data).to.be.an(\"array\")",
+									"",
+									"});",
+									"",
+									"//Functional",
+									"pm.test(\"Test quiz data has valid data\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    const quiz = jsonData.data.find(m => m.id > 0)",
+									"    pm.expect(quiz.id).to.match(/^[0-9]+$/);",
+									"    pm.expect(quiz.title).to.not.be.empty",
+									"    pm.expect(quiz.owner).to.be.an(\"object\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accesstoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/quizzes?",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"quizzes"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Quiz Collection",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.log(pm.collectionVariables.get(\"quizids\"))"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"postman.setNextRequest(\"Get Quiz collections list\")",
+									"",
+									"//status",
+									"pm.test(\"Test Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"pm.test(\"Test Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"//performance",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									"//Data type",
+									"pm.test(\"Test Create Quiz Collection Response Body\", function () {",
+									"    var jsonData = pm.response.json(); ",
+									"    pm.expect(jsonData.imageUrls).to.be.an(\"array\")",
+									"",
+									"});",
+									"",
+									"//Functional",
+									"pm.test(\"Test create quiz collection response has valid data\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.id).to.match(/^[0-9]+$/);",
+									"    pm.expect(jsonData.quizCount).to.be.equal(3)",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accesstoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quizIds\": {{quizids}},\n    \"title\": \"Test 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/collections",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"collections"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Quiz collections list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//status",
+									"pm.test(\"Test Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Test Content-Type header is present\", () => {",
+									"  pm.response.to.have.header(\"Content-Type\");",
+									"});",
+									"",
+									"//performance",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									"//Data type",
+									"pm.test(\"Test Quiz Collections List Response Body\", function () {",
+									"    var jsonData = pm.response.json(); ",
+									"    pm.expect(jsonData.regular.data).to.be.an(\"array\")",
+									"",
+									"});",
+									"",
+									"//Functional",
+									"pm.test(\"Test quiz collections list has valid data\", function () {",
+									"    let jsonData = pm.response.json();",
+									"    const quiz = jsonData.regular.data.find(m => m.id > 0)",
+									"    pm.expect(quiz.id).to.match(/^[0-9]+$/);",
+									"    pm.expect(quiz.title).to.not.be.empty",
+									"    pm.expect(quiz.quizCount).to.be.equal(3)",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accesstoken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/collections?",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"collections"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "accesstoken",
+			"value": ""
+		},
+		{
+			"key": "quizids",
+			"value": ""
+		}
+	]
+}
