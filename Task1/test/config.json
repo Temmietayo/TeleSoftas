@@ -1,6 +1,6 @@
 {
-    "browser": "chrome",
-    "wait_time": 10,
-    "env": "dev",
-    "url": "https://www.tiketa.lt/EN"
+	"browser": "chrome",
+	"url": "https://www.tiketa.lt/EN",
+	"wait_time": 10,
+	"env": "dev"
 }
