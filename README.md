@@ -87,9 +87,11 @@ Endpoints provided for task three were incomplete
 - No endpoint provided to create an account
     - Fix: Account was created throught the Web-UI
 - Endpoint to Get Quiz list was not provided
-    - Fix: I had to inspect the Web-UI page to see the API request that was being sent by the Web-UI to get all quiz list
+    - Fix:
+    1. I had to inspect the Web-UI page to see the API request that was being sent by the Web-UI to get all quiz list
+    2. I also had to debug that the actual API needed was the get quit list not collection list, as a new user can create a collection by adding quizzes from              the quiz list
 
-### Improvements
+
 
 
 
